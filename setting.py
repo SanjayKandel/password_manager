@@ -42,10 +42,10 @@ def setMasterKey():
 def main():
     print("It is your first time setting the database")
     a = input("Do you want to create database(y/n): ").lower()
-    
-    if a=='y':
+    if a == 'y':
         if os.path.exists('main.db'):
-            print("Database already exists! If you continue then your old database will be deleted.")
+            print("Database already exists!")
+            print("If you continue then your old database will be deleted.")
             x = input("Do you want to continue?(y/n):").lower()
             if x == 'n':
                 sys.exit()
@@ -61,7 +61,6 @@ def main():
     else:
         print("See you Soon")
         sys.exit()
-        
 
 if __name__ == '__main__':
     main()
