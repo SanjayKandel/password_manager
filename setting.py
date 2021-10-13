@@ -1,5 +1,6 @@
 import sqlite3,bcrypt,sys,getpass
 from sqlite3 import Error
+import os
 
 def createDB():
     try:
@@ -40,18 +41,27 @@ def setMasterKey():
 
 def main():
     print("It is your first time setting the database")
-    a = input("Do you want to create database(y/n): ")
-    if(a=='y' or a=='Y'):
+    a = input("Do you want to create database(y/n): ").lower()
+    
+    if a=='y':
+        if os.path.exists('main.db'):
+            print("Database already exists! If you continue then your old database will be deleted.")
+            x = input("Do you want to continue?(y/n):").lower()
+            if x == 'n':
+                sys.exit()
+            else:
+                os.remove('main.db')
         print("Creating database.....")
         conn = createDB()
         print("Creating Table....")
         createTB(conn)
-        print("All Done!")
+        print("Database Successfully created!")
         main_password = str(setMasterKey())
         addMasterKey(conn,main_password)
     else:
-        sys.exit()
         print("See you Soon")
+        sys.exit()
+        
 
 if __name__ == '__main__':
     main()
