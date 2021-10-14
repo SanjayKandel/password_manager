@@ -36,7 +36,9 @@ def Insert(conn, a):
     try:
         cur = conn.cursor()
         with conn:
-            cur.execute("INSERT INTO PERSONAL (USERNAME,WEBSITE,PASSWORD) VALUES(?,?,?)",a)
+            cur.execute('''
+            INSERT INTO PERSONAL (USERNAME, WEBSITE, PASSWORD) VALUES(?, ?, ?)
+            ''' , a)
     except Error:
         print(Error)
     finally:

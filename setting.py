@@ -12,7 +12,11 @@ def createTB(conn):
     try:
         cur = conn.cursor()
         with conn:
-            cur.execute('''CREATE TABLE PERSONAL(ID INTEGER PRIMARY KEY AUTOINCREMENT,USERNAME CHAR(50) NOT NULL,WEBSITE CHAR(50) NOT NULL,PASSWORD CHAR(100) NOT NULL);''')
+            cur.execute('''CREATE TABLE PERSONAL(ID INTEGER PRIMARY KEY AUTOINCREMENT, 
+            USERNAME CHAR(50) NOT NULL, 
+            WEBSITE CHAR(50) NOT NULL,
+            PASSWORD CHAR(100) NOT NULL);
+            ''')
     except sqlite3.Error as e:
         print(type(e).__name__)
 
@@ -22,7 +26,8 @@ def addMasterKey(conn,main_password):
     try:
         cur = conn.cursor()
         with conn:
-            cur.execute("INSERT INTO PERSONAL(USERNAME, WEBSITE,PASSWORD) VALUES (?,?,?)",temp)
+            cur.execute('''INSERT INTO PERSONAL(USERNAME, WEBSITE, PASSWORD) VALUES (?, ?, ?)
+            ''', temp)
     except sqlite3.Error as e:
         print(type(e).__name__)
     finally:
