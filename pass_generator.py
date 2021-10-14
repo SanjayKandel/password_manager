@@ -13,7 +13,7 @@ def display_table(master_key,data):
     table = Table(title="Your details")
     table.add_column("Id", justify="right", style="red", no_wrap=True)
     table.add_column("Username", style="cyan",)
-    table.add_column("Email",style="magenta")
+    table.add_column("Website",style="magenta")
     table.add_column("Password",justify="right",style="green")
     for row in data:
            table.add_row(str(row[0]),row[1],row[2],decrypt(master_key,row[3]))
