@@ -35,8 +35,8 @@ def sql_connection():
 def Insert(conn, a):
     try:
         cur = conn.cursor()
-        cur.execute("INSERT INTO PERSONAL (USERNAME,WEBSITE,PASSWORD) VALUES(?,?,?)",a)
-        conn.commit()
+        with conn:
+            cur.execute("INSERT INTO PERSONAL (USERNAME,WEBSITE,PASSWORD) VALUES(?,?,?)",a)
     except Error:
         print(Error)
     finally:
