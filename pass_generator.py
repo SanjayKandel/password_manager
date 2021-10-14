@@ -63,7 +63,6 @@ def encrypt(master_key,user_password):
     salt = b'\xd0O\xb3\xeb\xa7\x87\x8dg!\x93\xf7\\\xd5\xb0\x15\xd6'
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32,salt=salt,iterations=100000,backend=default_backend())
     key = base64.urlsafe_b64encode(kdf.derive(master_key.encode()))
-    user_password = user_password
     f= Fernet(key)
     encrypted = f.encrypt(user_password)
     return encrypted
