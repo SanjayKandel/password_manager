@@ -13,7 +13,7 @@ def display_table(master_key,data):
     table = Table(title="Your details")
     table.add_column("Id", justify="right", style="red", no_wrap=True)
     table.add_column("Username", style="cyan",)
-    table.add_column("Email",style="magenta")
+    table.add_column("Website",style="magenta")
     table.add_column("Password",justify="right",style="green")
     for row in data:
            table.add_row(str(row[0]),row[1],row[2],decrypt(master_key,row[3]))
@@ -63,7 +63,6 @@ def encrypt(master_key,user_password):
     salt = b'\xd0O\xb3\xeb\xa7\x87\x8dg!\x93\xf7\\\xd5\xb0\x15\xd6'
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32,salt=salt,iterations=100000,backend=default_backend())
     key = base64.urlsafe_b64encode(kdf.derive(master_key.encode()))
-    user_password = user_password
     f= Fernet(key)
     encrypted = f.encrypt(user_password)
     return encrypted
