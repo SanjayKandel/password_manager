@@ -47,7 +47,7 @@ row = 0
 already_added_rows_ids = []
 
 
-def add_row(id_: str, username: str, website: str, password: str, copy_button=True):
+def add_row(id_: str, username: str, website: str, password: str, copy_button=True, hide=True):
     global row
     already_added = False
     for already_added_row_id in already_added_rows_ids:
@@ -61,19 +61,34 @@ def add_row(id_: str, username: str, website: str, password: str, copy_button=Tr
                                                                                                  padx=2)
         tk.Label(master=saved_passwords_viewer_frame, text=website, fg='black', bg='snow').grid(row=row, column=2,
                                                                                                 padx=2)
-        tk.Label(master=saved_passwords_viewer_frame, text=password, fg='black', bg='snow').grid(row=row, column=3,
-                                                                                                 padx=2)
+        password_label = tk.Label(master=saved_passwords_viewer_frame, text='*' * 10, fg='black', bg='snow')
+        password_label.grid(row=row, column=3, padx=2)
+        if hide:
+            show_or_hide_button = tk.Button(master=saved_passwords_viewer_frame, text='Show')
+            show_or_hide_button.grid(row=row, column=4)
+
+            def show_or_hide():
+                if show_or_hide_button['text'] == 'Show':  # If shown
+                    password_label['text'] = password
+                    show_or_hide_button['text'] = 'Hide'
+                elif show_or_hide_button['text'] == 'Hide':  # Elif Hidden
+                    password_label['text'] = '*' * 10
+                    show_or_hide_button['text'] = 'Show'
+
+            show_or_hide_button['command'] = show_or_hide
+        else:
+            password_label['text'] = password
         if copy_button:
             def copy_password():
                 copy(password)
 
-            tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password).grid(row=row, column=4,
+            tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password).grid(row=row, column=5,
                                                                                                     padx=2)
         row += 1
         already_added_rows_ids.append(id_)
 
 
-add_row('Id', 'Username', 'Website', 'Password', copy_button=False)
+add_row('Id', 'Username', 'Website', 'Password', copy_button=False, hide=False)
 saved_passwords_viewer_frame.grid(row=0, column=0)
 
 add_password_frame = tk.Frame(master=root)
