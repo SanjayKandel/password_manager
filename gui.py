@@ -1,4 +1,5 @@
 import tkinter as tk
+from pyperclip import copy
 
 # Creating window
 root = tk.Tk()
@@ -32,6 +33,26 @@ class saved_passwords_display:
             command(event.widget.get(curselection))
 
         self.listbox.bind('<<ListboxSelect>>', event_handler)
+
+
+class password_viewer:
+    def __init__(self):
+        frame = tk.Frame(master=root)
+        self.password = None
+
+        def copy_password():
+            if self.password:
+                copy(self.password)
+
+        self.website_name_label = tk.Label(master=frame, text='', bg='snow', fg='black')
+        tk.Label(master=frame, text='*' * 10, fg='black', bg='snow').pack(side=tk.LEFT, anchor=tk.SW)
+        tk.Button(master=frame, text='Copy password', fg='snow', bg='green', command=copy_password).pack(side=tk.LEFT,
+                                                                                                         anchor=tk.SE)
+        frame.pack(side=tk.LEFT, anchor=tk.NW)
+
+    def set_website_and_password(self, website: str, password: str):
+        self.website_name_label['text'] = website
+        self.password = password
 
 
 mainloop = root.mainloop
