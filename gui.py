@@ -49,7 +49,8 @@ class password_viewer:
         self.website_name_label.grid(row=0, column=0)
         self.username_label.grid(row=0, column=1)
         tk.Label(master=frame, text='*' * 10, fg='black', bg='snow').grid(row=1, column=0)
-        tk.Button(master=frame, text='Copy password', fg='snow', bg='green', command=copy_password).grid(row=1, column=1)
+        tk.Button(master=frame, text='Copy password', fg='snow', bg='green', command=copy_password).grid(row=1,
+                                                                                                         column=1)
         frame.pack(side=tk.LEFT, anchor=tk.NW)
 
     def set_website_username_and_password(self, website: str, username: str, password: str):
@@ -79,6 +80,26 @@ class new_password_window:
 
         tk.Button(master=window, text='Save', command=save).pack()
         window.mainloop()
+
+
+websites_and_usernames_display = saved_passwords_display()
+set_websites = websites_and_usernames_display.set_websites
+on_website_select = websites_and_usernames_display.on_website_select
+pass_viewer = None
+
+
+def set_website_username_and_password(website: str, username: str, password: str):
+    global pass_viewer
+    if not pass_viewer:
+        pass_viewer = password_viewer()
+    pass_viewer.set_website_username_and_password(website, username, password)
+
+
+def set_add_password_command(command):
+    def button_command():
+        new_password_window(command)
+
+    tk.Button(master=root, text='Add a new password', command=button_command).pack(side=tk.LEFT, anchor=tk.SE)
 
 
 mainloop = root.mainloop
