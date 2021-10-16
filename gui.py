@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter.simpledialog import askstring
 from tkinter.messagebox import showerror
 from pyperclip import copy
+from tkscrolledframe import ScrolledFrame
 
 # Creating window
 root = tk.Tk()
@@ -42,7 +43,8 @@ class PassEntry:
         self.get = entry.get
 
 
-saved_passwords_viewer_frame = tk.Frame(master=root)
+saved_passwords_viewer_scrolled_frame = ScrolledFrame()
+saved_passwords_viewer_frame = saved_passwords_viewer_scrolled_frame.display_widget(tk.Frame)
 row = 0
 already_added_rows_ids = []
 
@@ -89,7 +91,7 @@ def add_row(id_: str, username: str, website: str, password: str, copy_button=Tr
 
 
 add_row('Id', 'Username', 'Website', 'Password', copy_button=False, hide=False)
-saved_passwords_viewer_frame.grid(row=0, column=0)
+saved_passwords_viewer_scrolled_frame.grid(row=0, column=0)
 
 add_password_frame = tk.Frame(master=root)
 website_entry = Entry(label_text='Website: ', master=add_password_frame)
