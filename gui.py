@@ -55,4 +55,27 @@ class password_viewer:
         self.password = password
 
 
+class new_password_window:
+    def __init__(self, command):
+        window = tk.Tk()
+        window.resizable(False, False)
+        form_frame = tk.Frame(master=window)
+        tk.Label(master=form_frame, text='Website: ', bg='snow', fg='black').grid(row=0, column=0)
+        tk.Label(master=form_frame, text='Username: ', bg='snow', fg='black').grid(row=1, column=0)
+        tk.Label(master=form_frame, text='Password: ', bg='snow', fg='black').grid(row=2, column=0)
+        website_entry = tk.Entry(master=form_frame)
+        website_entry.grid(row=0, column=1)
+        username_entry = tk.Entry(master=form_frame)
+        username_entry.grid(row=1, column=1)
+        password_entry = tk.Entry(master=form_frame, show='*')
+        password_entry.grid(row=2, column=1)
+        form_frame.pack()
+
+        def save():
+            command(website=website_entry.get(), username=username_entry.get(), password=password_entry.get())
+
+        tk.Button(master=window, text='Save', command=save).pack()
+        window.mainloop()
+
+
 mainloop = root.mainloop
