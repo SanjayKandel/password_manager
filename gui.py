@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter.simpledialog import askstring
 from tkinter.messagebox import showerror
+from pyperclip import copy
 
 # Creating window
 root = tk.Tk()
@@ -46,7 +47,7 @@ row = 0
 already_added_rows_ids = []
 
 
-def add_row(id_: str, username: str, website: str, password: str):
+def add_row(id_: str, username: str, website: str, password: str, copy_button=True):
     global row
     already_added = False
     for already_added_row_id in already_added_rows_ids:
@@ -54,15 +55,25 @@ def add_row(id_: str, username: str, website: str, password: str):
             already_added = True
             break
     if not already_added:
-        tk.Label(master=saved_passwords_viewer_frame, text=id_, fg='black', bg='snow').grid(row=row, column=0, padx=2)
-        tk.Label(master=saved_passwords_viewer_frame, text=username, fg='black', bg='snow').grid(row=row, column=1, padx=2)
-        tk.Label(master=saved_passwords_viewer_frame, text=website, fg='black', bg='snow').grid(row=row, column=2, padx=2)
-        tk.Label(master=saved_passwords_viewer_frame, text=password, fg='black', bg='snow').grid(row=row, column=3, padx=2)
+        tk.Label(master=saved_passwords_viewer_frame, text=id_, fg='black', bg='snow').grid(row=row, column=0,
+                                                                                            padx=2)
+        tk.Label(master=saved_passwords_viewer_frame, text=username, fg='black', bg='snow').grid(row=row, column=1,
+                                                                                                 padx=2)
+        tk.Label(master=saved_passwords_viewer_frame, text=website, fg='black', bg='snow').grid(row=row, column=2,
+                                                                                                padx=2)
+        tk.Label(master=saved_passwords_viewer_frame, text=password, fg='black', bg='snow').grid(row=row, column=3,
+                                                                                                 padx=2)
+        if copy_button:
+            def copy_password():
+                copy(password)
+
+            tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password).grid(row=row, column=4,
+                                                                                                    padx=2)
         row += 1
         already_added_rows_ids.append(id_)
 
 
-add_row('Id', 'Username', 'Website', 'Password')
+add_row('Id', 'Username', 'Website', 'Password', copy_button=False)
 saved_passwords_viewer_frame.grid(row=0, column=0)
 
 add_password_frame = tk.Frame(master=root)
