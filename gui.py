@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter.simpledialog import askstring
-from pyperclip import copy
+from tkinter.messagebox import showerror
 
 # Creating window
 root = tk.Tk()
@@ -8,103 +8,89 @@ root.wm_title('Password manager')
 root.resizable(False, False)
 
 
-# The widgets
-class saved_passwords_display:
-    def __init__(self):
-        frame = tk.Frame(master=root)
-        self.listbox = tk.Listbox(master=frame)
-        self.listbox.pack(side=tk.LEFT)
-        scrollbar = tk.Scrollbar(master=frame)
-        scrollbar.pack(side=tk.LEFT, fill=tk.Y)
-        self.listbox.config(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=self.listbox.yview)
-        frame.pack(side=tk.LEFT, anchor=tk.NW)
-
-    def set_websites(self, websites: list):
-        for website in websites:
-            self.listbox.insert(tk.END, website)
-
-    def on_website_select(self, command):
-        def event_handler(event):
-            curselection = event.widget.curselection()
-            if curselection:
-                curselection = int(curselection[0])
-            else:
-                curselection = 0
-            command(event.widget.get(curselection))
-
-        self.listbox.bind('<<ListboxSelect>>', event_handler)
+# Widgets
+class Entry:
+    def __init__(self, label_text, master):
+        frame = tk.Frame(master=master)
+        tk.Label(master=frame, text=label_text, bg='snow', fg='black').pack(side=tk.LEFT)
+        entry = tk.Entry(master=frame)
+        entry.pack(side=tk.RIGHT)
+        self.grid = frame.grid
+        self.get = entry.get
 
 
-class password_viewer:
-    def __init__(self):
-        frame = tk.Frame(master=root)
-        self.password = None
+class PassEntry:
+    def __init__(self, master, label_text='Password: '):
+        frame = tk.Frame(master=master)
+        tk.Label(master=frame, text=label_text, bg='snow', fg='black').pack(side=tk.LEFT)
+        show_or_hide_password_button = tk.Button(master=frame, text='Show')
+        show_or_hide_password_button.pack(side=tk.RIGHT)
+        entry = tk.Entry(master=frame, show='*')
+        entry.pack(side=tk.RIGHT)
 
-        def copy_password():
-            if self.password:
-                copy(self.password)
+        def show_or_hide_password():
+            if entry['show'] == '*':  # If password is hidden
+                entry['show'] = ''  # Show password
+                show_or_hide_password_button['text'] = 'Hide'
+            elif entry['show'] == '':  # Elif password is shown
+                entry['show'] = '*'  # Hide password
+                show_or_hide_password_button['text'] = 'Show'
 
-        self.website_name_label = tk.Label(master=frame, text='', bg='snow', fg='black')
-        self.username_label = tk.Label(master=frame, text='', bg='snow', fg='black')
-        self.website_name_label.grid(row=0, column=0)
-        self.username_label.grid(row=0, column=1)
-        tk.Label(master=frame, text='*' * 10, fg='black', bg='snow').grid(row=1, column=0)
-        tk.Button(master=frame, text='Copy password', fg='snow', bg='green', command=copy_password).grid(row=1,
-                                                                                                         column=1)
-        frame.pack(side=tk.LEFT, anchor=tk.NW)
-
-    def set_website_username_and_password(self, website: str, username: str, password: str):
-        self.website_name_label['text'] = f'Website: {website}'
-        self.username_label['text'] = f'Username: {username}'
-        self.password = password
+        show_or_hide_password_button['command'] = show_or_hide_password
+        self.grid = frame.grid
+        self.get = entry.get
 
 
-class new_password_window:
-    def __init__(self, command):
-        window = tk.Tk()
-        window.resizable(False, False)
-        form_frame = tk.Frame(master=window)
-        tk.Label(master=form_frame, text='Website: ', bg='snow', fg='black').grid(row=0, column=0)
-        tk.Label(master=form_frame, text='Username: ', bg='snow', fg='black').grid(row=1, column=0)
-        tk.Label(master=form_frame, text='Password: ', bg='snow', fg='black').grid(row=2, column=0)
-        website_entry = tk.Entry(master=form_frame)
-        website_entry.grid(row=0, column=1)
-        username_entry = tk.Entry(master=form_frame)
-        username_entry.grid(row=1, column=1)
-        password_entry = tk.Entry(master=form_frame, show='*')
-        password_entry.grid(row=2, column=1)
-        form_frame.pack()
-
-        def save():
-            command(website=website_entry.get(), username=username_entry.get(), password=password_entry.get())
-
-        tk.Button(master=window, text='Save', command=save).pack()
-        window.mainloop()
+saved_passwords_viewer_frame = tk.Frame(master=root)
+row = 0
+already_added_rows_ids = []
 
 
-websites_and_usernames_display = saved_passwords_display()
-set_websites = websites_and_usernames_display.set_websites
-on_website_select = websites_and_usernames_display.on_website_select
-pass_viewer = None
+def add_row(id_: str, username: str, website: str, password: str):
+    global row
+    already_added = False
+    for already_added_row_id in already_added_rows_ids:
+        if id_ == already_added_row_id:
+            already_added = True
+            break
+    if not already_added:
+        tk.Label(master=saved_passwords_viewer_frame, text=id_, fg='black', bg='snow').grid(row=row, column=0, padx=2)
+        tk.Label(master=saved_passwords_viewer_frame, text=username, fg='black', bg='snow').grid(row=row, column=1, padx=2)
+        tk.Label(master=saved_passwords_viewer_frame, text=website, fg='black', bg='snow').grid(row=row, column=2, padx=2)
+        tk.Label(master=saved_passwords_viewer_frame, text=password, fg='black', bg='snow').grid(row=row, column=3, padx=2)
+        row += 1
+        already_added_rows_ids.append(id_)
 
 
-def set_website_username_and_password(website: str, username: str, password: str):
-    global pass_viewer
-    if not pass_viewer:
-        pass_viewer = password_viewer()
-    pass_viewer.set_website_username_and_password(website, username, password)
+add_row('Id', 'Username', 'Website', 'Password')
+saved_passwords_viewer_frame.grid(row=0, column=0)
+
+add_password_frame = tk.Frame(master=root)
+website_entry = Entry(label_text='Website: ', master=add_password_frame)
+username_entry = Entry(label_text='Username: ', master=add_password_frame)
+password_entry = PassEntry(master=add_password_frame)
+website_entry.grid(row=0, column=0)
+username_entry.grid(row=1, column=0)
+password_entry.grid(row=2, column=0)
+add_password_button = tk.Button(master=add_password_frame, text='Add password!', fg='snow', bg='green')
+add_password_button.grid(row=3, column=0)
 
 
 def set_add_password_command(command):
     def button_command():
-        new_password_window(command)
+        command(website=website_entry.get(), username=username_entry.get(), password=password_entry.get())
 
-    tk.Button(master=root, text='Add a new password', command=button_command).pack(side=tk.LEFT, anchor=tk.SE)
+    add_password_button.configure(command=button_command)
 
+
+add_password_frame.grid(row=0, column=1)
 
 mainloop = root.mainloop
 
 
 def get_master_password():
-    return askstring('Master password', 'Password: ', show='*')
+    return askstring(title='Master password', prompt='Password: ', show='*')
+
+
+def show_wrong_master_password_error():
+    showerror(title='Incorrect password', message='Wrong master password')
