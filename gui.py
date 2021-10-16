@@ -45,13 +45,16 @@ class password_viewer:
                 copy(self.password)
 
         self.website_name_label = tk.Label(master=frame, text='', bg='snow', fg='black')
-        tk.Label(master=frame, text='*' * 10, fg='black', bg='snow').pack(side=tk.LEFT, anchor=tk.SW)
-        tk.Button(master=frame, text='Copy password', fg='snow', bg='green', command=copy_password).pack(side=tk.LEFT,
-                                                                                                         anchor=tk.SE)
+        self.username_label = tk.Label(master=frame, text='', bg='snow', fg='black')
+        self.website_name_label.grid(row=0, column=0)
+        self.username_label.grid(row=0, column=1)
+        tk.Label(master=frame, text='*' * 10, fg='black', bg='snow').grid(row=1, column=0)
+        tk.Button(master=frame, text='Copy password', fg='snow', bg='green', command=copy_password).grid(row=1, column=1)
         frame.pack(side=tk.LEFT, anchor=tk.NW)
 
-    def set_website_and_password(self, website: str, password: str):
-        self.website_name_label['text'] = website
+    def set_website_username_and_password(self, website: str, username: str, password: str):
+        self.website_name_label['text'] = f'Website: {website}'
+        self.username_label['text'] = f'Username: {username}'
         self.password = password
 
 
