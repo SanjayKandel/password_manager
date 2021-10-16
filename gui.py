@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.simpledialog import askstring
 from pyperclip import copy
 
 # Creating window
@@ -103,3 +104,7 @@ def set_add_password_command(command):
 
 
 mainloop = root.mainloop
+
+
+def get_master_password():
+    return askstring('Master password', 'Password: ', show='*')
