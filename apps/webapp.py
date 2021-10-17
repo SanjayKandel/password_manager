@@ -20,10 +20,10 @@ def index():
         if bcrypt.checkpw(master_key.encode(), hashed.encode()):
             data = Show(master_key, conn)
             # Style credit: w3schools.com
-            return_value = """<style>
+            return_value = """<!DOCTYPE html><html><head><style>
             table {font-family: arial, sans-serif;border-collapse: collapse;width: 100%;}
             td, th {border: 1px solid #dddddd; text-align: left; padding: 8px;}
-            </style>
+            </style></head><body>
             <table><tr><th><b>ID</b></th><th><b>Username</b></th><th><b>Website</b></th><th><b>Password</b</th>"""
             for row in data:
                 return_value += '<tr>'
@@ -32,7 +32,7 @@ def index():
                 return_value += f'<th>{row[2]}</th>'
                 return_value += f'<th>{decrypt(master_key, row[3])}</th>'
                 return_value += '</tr>'
-            return_value += '</table>'
+            return_value += '</table></body></html>'
             return return_value
         else:
             return """<!DOCTYPE html><html><script>
