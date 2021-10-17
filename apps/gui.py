@@ -199,7 +199,7 @@ def main():
                     refresh_table()
             else:
                 password = generate_password()
-                temp = encrypt(master_key, password.encode())
+                temp = encrypt(master_key, password)
                 items = (username, website, temp)
                 Insert(conn, items)  # adding element to db
                 refresh_table()

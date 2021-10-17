@@ -18,7 +18,21 @@ def index():
         cur.execute("SELECT PASSWORD FROM PERSONAL WHERE ID=1")
         hashed = cur.fetchone()[0]
         if bcrypt.checkpw(master_key.encode(), hashed.encode()):
-            return 'Authentication successful!'
+            data = Show(master_key, conn)
+            return_value = """<style>
+            table {font-family: arial, sans-serif;border-collapse: collapse;width: 100%;}
+            td, th {border: 1px solid #dddddd; text-align: left; padding: 8px;}
+            </style>
+            <table><tr><th><b>ID</b></th><th><b>Username</b></th><th><b>Website</b></th><th><b>Password</b</th>"""
+            for row in data:
+                return_value += '<tr>'
+                return_value += f'<th>{str(row[0])}</th>'
+                return_value += f'<th>{row[1]}</th>'
+                return_value += f'<th>{row[2]}</th>'
+                return_value += f'<th>{decrypt(master_key, row[3])}</th>'
+                return_value += '</tr>'
+            return_value += '</table>'
+            return return_value
         else:
             return """<!DOCTYPE html><html><script>
             var request = new XMLHttpRequest();
