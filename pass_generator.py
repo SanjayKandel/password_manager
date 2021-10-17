@@ -39,13 +39,25 @@ def Insert(conn, a):
             cur.execute('''
             INSERT INTO PERSONAL (USERNAME, WEBSITE, PASSWORD) VALUES(?, ?, ?)
             ''' , a)
+            conn.commit()
     except Error:
         print(Error)
-    finally:
-        conn.close()
 
     # unhashed_passw= a.encode('utf-8') 
     # hashed_passw = bcrypt.hashpw(unhashed_passw,bcrypt.gensalt())
+def delete(master_key,conn,id):
+    if id==1:
+        rprint("[bold red]You can't delete the master key!")
+        return
+    try:
+        cur = conn.cursor()
+        with conn:
+            cur.execute('DELETE FROM PERSONAL WHERE ID = ?',(id,))
+            print(f"Password at id {id} deleted successfully!")
+        conn.commit()
+    except Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+
 def Show(master_key,conn):
     try:
         cur = conn.cursor()
@@ -55,8 +67,6 @@ def Show(master_key,conn):
         console.print(table)
     except Error:
         print(Error)
-    finally:
-        conn.close()
 
 def encrypt(master_key,user_password):
     #we will get this main pass form data base
@@ -76,8 +86,8 @@ def decrypt(master_key,encrypted_pass):
     return decrypted.decode()
 
 def main():
-    print("1. Generate New Password \n2. Show My Saved Passwords")
-    a = Prompt.ask("Enter Your Choice", choices=["1","2"])
+    print("1. Generate New Password \n2. Show My Saved Passwords\n3. Delete a saved password\n")
+    a = Prompt.ask("Enter Your Choice", choices=["1","2","3"])
 
     if a=="1":
         global master_key
@@ -110,7 +120,19 @@ def main():
             Show(master_key,conn)
         else:
              rprint("[bold red]Enter Valid Password!")
-
+    elif a == "3":
+        master_key = getpass.getpass("Enter your master-key: ")
+        conn =sql_connection()
+        cur= conn.cursor()
+        cur.execute("SELECT PASSWORD FROM PERSONAL WHERE ID=1")
+        hashed=cur.fetchone()[0]
+        if bcrypt.checkpw(master_key.encode(),hashed.encode()):
+            Show(master_key,conn)
+            id = int(input("Enter the id of the password to delete: "))
+            delete(master_key,conn,id)
+        else:
+             rprint("[bold red]Enter Valid Password!")
+        
     else:
         print("Enter valid choice")
 
