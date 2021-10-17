@@ -60,7 +60,13 @@ def index():
                            'window.location.reload();}' \
                            'else {' \
                            'document.getElementById("password error p").innerHTML = request.response;}}' \
-                           '</script></head><body>' \
+                           """function logout() {
+                            var request = new XMLHttpRequest();
+                            request.open("GET", "reset", false);
+                            request.send(null);
+                            window.location.reload();
+                            }""" \
+                           '</script></head><body><button onclick="logout()">Logout</button><br>' \
                            '<table><tr>' \
                            '<th><b>ID</b></th><th><b>Username</b></th><th><b>Website</b></th><th><b>Password</b</th>'
             for row in data:
@@ -72,9 +78,9 @@ def index():
                 return_value += f'<th><button onclick=\'window.location.href = "delete?id={str(row[0])}"\'>Delete' \
                                 f'</button></th>'
                 return_value += '</tr>'
-            return_value += '</table><p>Website: </p><input id="website-input"><br>' \
-                            '<p>Username: </p><input id="username-input"><br>' \
-                            '<p>Password: </p><input id="password-input" type="password"><br>' \
+            return_value += '</table><p>Website</p><input id="website-input"><br>' \
+                            '<p>Username</p><input id="username-input"><br>' \
+                            '<p>Password</p><input id="password-input" type="password"><br>' \
                             '<button onclick="add()">Add</button>' \
                             '<p id="password error p"></p></body></html>'
             return return_value
@@ -86,11 +92,14 @@ def index():
             </script><body><p>Wrong password, refresh page to try again</p></body></html>""", 403
     else:
         return """<!DOCTYPE html><html><head><script>
+        function login() {
         var request = new XMLHttpRequest();
-        request.open("GET", "authenticate?password=" + window.prompt("Enter your password"), false);
+        request.open("GET", "authenticate?password=" + document.getElementById("master password").value, false);
         request.send(null);
         window.location.reload();
-        </script></head></html>"""
+        }
+        </script></head><body><p>Master password</p><input type="password" id="master password"><br>
+        <button onclick="login()">Login</button></body></html>"""
 
 
 @app.route('/authenticate')
