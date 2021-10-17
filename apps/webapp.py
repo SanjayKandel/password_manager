@@ -54,7 +54,7 @@ def index():
                            '</style><script>' \
                            'function add(){' \
                            'var request = new XMLHttpRequest();' \
-                           'request.open("GET", "add?website=" + document.getElementById(\'website-input\').value + "&username=" + document.getElementById(\'username-input\').value + "&password=" + document.getElementById(\'password-input\').value, false);' \
+                           'request.open("GET", "add?website=" + encodeURIComponent(document.getElementById(\'website-input\').value) + "&username=" + encodeURIComponent(document.getElementById(\'username-input\').value) + "&password=" + encodeURIComponent(document.getElementById(\'password-input\').value), false);' \
                            'request.send(null);' \
                            'if (request.response == ""){' \
                            'window.location.reload();}' \
@@ -94,7 +94,7 @@ def index():
         return """<!DOCTYPE html><html><head><script>
         function login() {
         var request = new XMLHttpRequest();
-        request.open("GET", "authenticate?password=" + document.getElementById("master password").value, false);
+        request.open("GET", "authenticate?password=" + encodeURIComponent(document.getElementById("master password").value), false);
         request.send(null);
         window.location.reload();
         }
@@ -143,7 +143,7 @@ def add():
     else:
         return """<!DOCTYPE html><html><head><script>
         var request = new XMLHttpRequest();
-        request.open("GET", "authenticate?password=" + window.prompt("Enter your password"), false);
+        request.open("GET", "authenticate?password=" + encodeURIComponent(document.getElementById("master password").value), false);
         request.send(null);
         window.location.reload();
         </script></head></html>"""
