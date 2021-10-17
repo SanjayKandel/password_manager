@@ -3,7 +3,7 @@ import sys
 import bcrypt
 
 sys.path.append('../')
-from model import sql_connection, Insert, delete, Show
+from model import sql_connection, Insert, delete as Delete, Show
 from pass_generator import generate_password, encrypt, decrypt
 
 app = Flask(__name__)
@@ -69,6 +69,8 @@ def index():
                 return_value += f'<th>{row[1]}</th>'
                 return_value += f'<th>{row[2]}</th>'
                 return_value += f'<th>{decrypt(master_key, row[3])}</th>'
+                return_value += f'<th><button onclick=\'window.location.href = "delete?id={str(row[0])}"\'>Delete' \
+                                f'</button></th>'
                 return_value += '</tr>'
             return_value += '</table><input id="website-input"><br>' \
                             '<input id="username-input"><br>' \
@@ -136,6 +138,16 @@ def add():
         request.send(null);
         window.location.reload();
         </script></head></html>"""
+
+
+@app.route('/delete')
+def delete():
+    id_ = int(request.args.get('id'))
+    conn = sql_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT PASSWORD FROM PERSONAL WHERE ID=1")
+    Delete(master_key, conn, id_)
+    return '<!DOCTYPE html><html><head><script>window.location.href = "/"</script></head></html>'
 
 
 app.run()
