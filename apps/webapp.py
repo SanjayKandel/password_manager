@@ -72,9 +72,9 @@ def index():
                 return_value += f'<th><button onclick=\'window.location.href = "delete?id={str(row[0])}"\'>Delete' \
                                 f'</button></th>'
                 return_value += '</tr>'
-            return_value += '</table><input id="website-input"><br>' \
-                            '<input id="username-input"><br>' \
-                            '<input id="password-input"><br>' \
+            return_value += '</table><p>Website: </p><input id="website-input"><br>' \
+                            '<p>Username: </p><input id="username-input"><br>' \
+                            '<p>Password: </p><input id="password-input" type="password"><br>' \
                             '<button onclick="add()">Add</button>' \
                             '<p id="password error p"></p></body></html>'
             return return_value
