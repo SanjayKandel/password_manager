@@ -57,7 +57,8 @@ row = 0
 already_added_rows_ids = []
 
 
-def add_row(id_: str, username: str, website: str, password: str, copy_button=True, hide=True):
+def add_row(id_: str, username: str, website: str, password: str, master_key=None, conn=None, copy_button=True,
+            hide=True):
     global row
     already_added = False
     for already_added_row_id in already_added_rows_ids:
@@ -65,17 +66,16 @@ def add_row(id_: str, username: str, website: str, password: str, copy_button=Tr
             already_added = True
             break
     if not already_added:
-        tk.Label(master=saved_passwords_viewer_frame, text=id_, fg='black', bg='snow').grid(row=row, column=0,
-                                                                                            padx=2)
-        tk.Label(master=saved_passwords_viewer_frame, text=username, fg='black', bg='snow').grid(row=row, column=1,
-                                                                                                 padx=2)
-        tk.Label(master=saved_passwords_viewer_frame, text=website, fg='black', bg='snow').grid(row=row, column=2,
-                                                                                                padx=2)
+        widgets = []
+        column = 0
+        widgets.append(tk.Label(master=saved_passwords_viewer_frame, text=id_, fg='black', bg='snow'))
+        widgets.append(tk.Label(master=saved_passwords_viewer_frame, text=username, fg='black', bg='snow'))
+        widgets.append(tk.Label(master=saved_passwords_viewer_frame, text=website, fg='black', bg='snow'))
         password_label = tk.Label(master=saved_passwords_viewer_frame, text='*' * 10, fg='black', bg='snow')
-        password_label.grid(row=row, column=3, padx=2)
+        widgets.append(password_label)
         if hide:
             show_or_hide_button = tk.Button(master=saved_passwords_viewer_frame, text='Show')
-            show_or_hide_button.grid(row=row, column=4)
+            widgets.append(show_or_hide_button)
 
             def show_or_hide():
                 if show_or_hide_button['text'] == 'Show':  # If shown
@@ -92,10 +92,21 @@ def add_row(id_: str, username: str, website: str, password: str, copy_button=Tr
             def copy_password():
                 copy(password)
 
-            tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password).grid(row=row, column=5,
-                                                                                                    padx=2)
+            widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password))
+        if master_key and conn:
+            def delete_():
+                delete(master_key, conn, id_)
+                for widget_ in widgets:
+                    widget_.grid_forget()
+
+            widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Delete', fg='snow', bg='red',
+                                     command=delete_))
+            
         row += 1
         already_added_rows_ids.append(id_)
+        for widget in widgets:
+            widget.grid(row=row, column=column, padx=2)
+            column += 1
 
 
 add_row('Id', 'Username', 'Website', 'Password', copy_button=False, hide=False)
@@ -130,9 +141,9 @@ def show_wrong_master_password_error():
     showerror(title='Incorrect password', message='Wrong master password')
 
 
-def display_table(master_key, data):
+def display_table(master_key, data, conn):
     for row_ in data:
-        add_row(str(row_[0]), row_[1], row_[2], decrypt(master_key, row_[3]))
+        add_row(str(row_[0]), row_[1], row_[2], decrypt(master_key, row_[3]), conn=conn, master_key=master_key)
 
 
 def main():
@@ -144,7 +155,7 @@ def main():
     if bcrypt.checkpw(master_key.encode(), hashed.encode()):
         def refresh_table():
             data = Show(master_key, conn)
-            display_table(master_key, data)
+            display_table(master_key, data, conn)
 
         def add_password(website: str, username: str, password: str):
             if not password:
