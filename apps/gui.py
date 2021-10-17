@@ -16,6 +16,34 @@ root.wm_title('Password manager')
 root.resizable(False, False)
 
 
+def get_weaknesses_in_password(password: str):
+    result = ''
+    if len(password) < 8:
+        result += f'\u2022 Password contains {len(password)} characters, a minimum of 8 characters is recommended\n'
+    small_letter_found = False
+    cap_letter_found = False
+    num_found = False
+    for letter in password:
+        if letter.islower():
+            small_letter_found = True
+            break
+    for letter in password:
+        if letter.isupper():
+            cap_letter_found = True
+            break
+    for letter in password:
+        if letter.isdigit():
+            num_found = True
+            break
+    if not small_letter_found:
+        result += '\u2022Password contains no small letters\n'
+    if not cap_letter_found:
+        result += '\u2022Password contains no capital letters\n'
+    if not num_found:
+        result += '\u2022Password contains no numbers'
+    return result.strip('\n')
+
+
 # Widgets
 class Entry:
     def __init__(self, label_text, master):
@@ -101,7 +129,7 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
 
             widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Delete', fg='snow', bg='red',
                                      command=delete_))
-            
+
         row += 1
         already_added_rows_ids.append(id_)
         for widget in widgets:
@@ -158,12 +186,23 @@ def main():
             display_table(master_key, data, conn)
 
         def add_password(website: str, username: str, password: str):
-            if not password:
+            weaknesses_in_password = get_weaknesses_in_password(password)
+            if password:
+                if weaknesses_in_password:
+                    showerror('Weak password',
+                              f'Your password has the following weakness:\n{weaknesses_in_password}\nLeave the '
+                              f'password field blank if you want to auto-generate password')
+                else:
+                    temp = encrypt(master_key, password.encode())
+                    items = (username, website, temp)
+                    Insert(conn, items)  # adding element to db
+                    refresh_table()
+            else:
                 password = generate_password()
-            temp = encrypt(master_key, password.encode())
-            items = (username, website, temp)
-            Insert(conn, items)  # adding element to db
-            refresh_table()
+                temp = encrypt(master_key, password.encode())
+                items = (username, website, temp)
+                Insert(conn, items)  # adding element to db
+                refresh_table()
 
         set_add_password_command(add_password)
         refresh_table()
