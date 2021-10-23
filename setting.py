@@ -1,5 +1,9 @@
-import sqlite3,bcrypt,sys,getpass
+import sqlite3
+import bcrypt
+import sys
+import getpass
 import os
+
 
 def createDB():
     try:
@@ -7,6 +11,7 @@ def createDB():
         return conn
     except sqlite3.Error as e:
         print(type(e).__name__)
+
 
 def createTB(conn):
     try:
@@ -20,9 +25,10 @@ def createTB(conn):
     except sqlite3.Error as e:
         print(type(e).__name__)
 
-def addMasterKey(conn,main_password):
-    hashed = bcrypt.hashpw(main_password.encode('utf-8'),bcrypt.gensalt())
-    temp=('Masterkey','Masterkey',hashed.decode())
+
+def addMasterKey(conn, main_password):
+    hashed = bcrypt.hashpw(main_password.encode('utf-8'), bcrypt.gensalt())
+    temp = ('Masterkey', 'Masterkey', hashed.decode())
     try:
         cur = conn.cursor()
         with conn:
@@ -32,16 +38,17 @@ def addMasterKey(conn,main_password):
         print(type(e).__name__)
     finally:
         conn.close()
-    
+
 
 def setMasterKey():
-    main_password= getpass.getpass("Enter Master Password: ")
+    main_password = getpass.getpass("Enter Master Password: ")
     reenter = getpass.getpass("Re-Enter Master Password: ")
     if main_password == reenter:
         return main_password
     else:
         print("Re-Entered password was not the same as Master Password\nRe-Enter your Password")
         setMasterKey()
+
 
 def main():
     print("It is your first time setting the database")
@@ -61,10 +68,11 @@ def main():
         createTB(conn)
         print("Database Successfully created!")
         main_password = str(setMasterKey())
-        addMasterKey(conn,main_password)
+        addMasterKey(conn, main_password)
     else:
         print("See you Soon")
         sys.exit()
+
 
 if __name__ == '__main__':
     main()
