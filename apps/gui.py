@@ -7,7 +7,7 @@ import sys
 import bcrypt
 
 sys.path.append('../')
-from model import sql_connection, Insert, delete, Show
+from model import sql_connection, Insert, delete, Show, update, get_password_from_id
 from pass_generator import generate_password, encrypt, decrypt
 
 # Creating window
@@ -107,7 +107,7 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
 
             def show_or_hide():
                 if show_or_hide_button['text'] == 'Show':  # If shown
-                    password_label['text'] = password
+                    password_label['text'] = get_password_from_id(master_key, conn, id_)
                     show_or_hide_button['text'] = 'Hide'
                 elif show_or_hide_button['text'] == 'Hide':  # Elif Hidden
                     password_label['text'] = '*' * 10
@@ -123,7 +123,21 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
             widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password))
         if edit_button:
             def edit_password():
-                pass  # TODO
+                new_password = str(askstring(title='Update password', prompt='Enter new password', show='*'))
+                weaknesses_in_password = get_weaknesses_in_password(new_password)
+                if new_password:
+                    if weaknesses_in_password:
+                        showerror('Weak password',
+                                  f'Your password has the following weakness:\n{weaknesses_in_password}\nLeave the '
+                                  f'password field blank if you want to auto-generate password')
+                    else:
+                        update(master_key, conn, id_, new_password.encode())
+                        if not password_label['text'] == '*' * 10:
+                            password_label['text'] = get_password_from_id(master_key, conn, id_)
+                else:
+                    update(master_key, conn, id_, generate_password())
+                    if not password_label['text'] == '*' * 10:
+                        password_label['text'] = get_password_from_id(master_key, conn, id_)
             widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Edit', command=edit_password))
         if master_key and conn:
             def delete_():

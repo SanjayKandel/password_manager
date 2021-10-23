@@ -65,3 +65,10 @@ def Show(master_key, conn):
         return data
     except Error:
         print(Error)
+
+
+def get_password_from_id(master_key, conn, id):
+    data = Show(master_key, conn)
+    for row in data:
+        if row[0] == int(id):
+            return decrypt(master_key, row[3])
