@@ -86,7 +86,7 @@ already_added_rows_ids = []
 
 
 def add_row(id_: str, username: str, website: str, password: str, master_key=None, conn=None, copy_button=True,
-            hide=True):
+            edit_button=True, hide=True):
     global row
     already_added = False
     for already_added_row_id in already_added_rows_ids:
@@ -121,6 +121,10 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
                 copy(password)
 
             widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password))
+        if edit_button:
+            def edit_password():
+                pass  # TODO
+            widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Edit', command=edit_password))
         if master_key and conn:
             def delete_():
                 delete(master_key, conn, id_)
@@ -137,7 +141,7 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
             column += 1
 
 
-add_row('Id', 'Username', 'Website', 'Password', copy_button=False, hide=False)
+add_row('Id', 'Username', 'Website', 'Password', copy_button=False, edit_button=False, hide=False)
 saved_passwords_viewer_scrolled_frame.grid(row=0, column=0)
 
 add_password_frame = tk.Frame(master=root)
