@@ -7,7 +7,7 @@ import sys
 import bcrypt
 
 sys.path.append('../')
-from model import sql_connection, Insert, delete, Show
+from model import sql_connection, Insert, delete, Show, update, get_password_from_id
 from pass_generator import generate_password, encrypt, decrypt
 
 # Creating window
@@ -86,7 +86,7 @@ already_added_rows_ids = []
 
 
 def add_row(id_: str, username: str, website: str, password: str, master_key=None, conn=None, copy_button=True,
-            hide=True):
+            edit_button=True, hide=True):
     global row
     already_added = False
     for already_added_row_id in already_added_rows_ids:
@@ -107,7 +107,7 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
 
             def show_or_hide():
                 if show_or_hide_button['text'] == 'Show':  # If shown
-                    password_label['text'] = password
+                    password_label['text'] = get_password_from_id(master_key, conn, id_)
                     show_or_hide_button['text'] = 'Hide'
                 elif show_or_hide_button['text'] == 'Hide':  # Elif Hidden
                     password_label['text'] = '*' * 10
@@ -121,6 +121,24 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
                 copy(password)
 
             widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Copy', command=copy_password))
+        if edit_button:
+            def edit_password():
+                new_password = str(askstring(title='Update password', prompt='Enter new password', show='*'))
+                weaknesses_in_password = get_weaknesses_in_password(new_password)
+                if new_password:
+                    if weaknesses_in_password:
+                        showerror('Weak password',
+                                  f'Your password has the following weakness:\n{weaknesses_in_password}\nLeave the '
+                                  f'password field blank if you want to auto-generate password')
+                    else:
+                        update(master_key, conn, id_, new_password.encode())
+                        if not password_label['text'] == '*' * 10:
+                            password_label['text'] = get_password_from_id(master_key, conn, id_)
+                else:
+                    update(master_key, conn, id_, generate_password())
+                    if not password_label['text'] == '*' * 10:
+                        password_label['text'] = get_password_from_id(master_key, conn, id_)
+            widgets.append(tk.Button(master=saved_passwords_viewer_frame, text='Edit', command=edit_password))
         if master_key and conn:
             def delete_():
                 delete(master_key, conn, id_)
@@ -137,7 +155,7 @@ def add_row(id_: str, username: str, website: str, password: str, master_key=Non
             column += 1
 
 
-add_row('Id', 'Username', 'Website', 'Password', copy_button=False, hide=False)
+add_row('Id', 'Username', 'Website', 'Password', copy_button=False, edit_button=False, hide=False)
 saved_passwords_viewer_scrolled_frame.grid(row=0, column=0)
 
 add_password_frame = tk.Frame(master=root)
