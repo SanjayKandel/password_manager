@@ -3,7 +3,7 @@ import sys
 import bcrypt
 
 sys.path.append('../')
-from model import sql_connection, Insert, delete as Delete, Show
+from model import sql_connection, Insert, delete as Delete, Show, update as Update
 from pass_generator import generate_password, encrypt, decrypt
 
 app = Flask(__name__)
@@ -77,6 +77,8 @@ def index():
                 return_value += f'<th>{decrypt(master_key, row[3])}</th>'
                 return_value += f'<th><button onclick=\'window.location.href = "delete?id={str(row[0])}"\'>Delete' \
                                 f'</button></th>'
+                return_value += '<th><input id="new password" type="password"></th>'
+                return_value += f'<th><button onclick=\'window.location.href = "update?id={str(row[0])}&password=" + document.getElementById("new password").value;\'>Update password</button></th>'
                 return_value += '</tr>'
             return_value += '</table><p>Website</p><input id="website-input"><br>' \
                             '<p>Username</p><input id="username-input"><br>' \
@@ -157,6 +159,26 @@ def delete():
     cur.execute("SELECT PASSWORD FROM PERSONAL WHERE ID=1")
     Delete(master_key, conn, id_)
     return '<!DOCTYPE html><html><head><script>window.location.href = "/"</script></head></html>'
+
+
+@app.route('/update')
+def update():
+    id_ = int(request.args.get('id'))
+    new_password = request.args.get('password')
+    conn = sql_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT PASSWORD FROM PERSONAL WHERE ID=1")
+    weaknesses_in_password = get_weaknesses_in_password(new_password)
+    if new_password:
+        if weaknesses_in_password:
+            return f'<!DOCTYPE html><html><body><p>Your password has the following weakness:<br>{weaknesses_in_password}</p></body></html>'
+        else:
+            Update(master_key, conn, id_, new_password.encode())
+            return '<!DOCTYPE html><html><head><script>window.location.href = "/";</script></head></html>'
+    else:
+        new_password = generate_password()
+        Update(master_key, conn, id_, new_password)
+        return '<!DOCTYPE html><html><head><script>window.location.href = "/";</script></head></html>'
 
 
 app.run()
